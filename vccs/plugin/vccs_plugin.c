@@ -195,7 +195,8 @@ typedef int (*reset_fn_t)(int);
 static int real_set(int handle, const OrbisPadColor *c)
 {
     if (g_hook_set_ok) return HOOK_CONTINUE(scePadSetLightBar, set_fn_t, handle, c);
-    return scePadSetLightBar(handle, c);
+    OrbisPadColor tmp = *c; /* the real prototype takes a non-const pointer */
+    return scePadSetLightBar(handle, &tmp);
 }
 
 static int scePadSetLightBar_hook(int handle, const OrbisPadColor *c)
@@ -336,13 +337,14 @@ static void *vccs_worker(void *arg)
     return NULL;
 }
 
+static void *g_thread_handle[2];
+
 int module_start(size_t argc, const void *args)
 {
     (void)argc; (void)args;
     plog("module_start (plugin loaded in this process)");
     install_hooks();
-    ScePthread th;
-    int tr = scePthreadCreate(&th, NULL, vccs_worker, NULL, "vccs_plugin");
+    int tr = scePthreadCreate((void *)g_thread_handle, NULL, vccs_worker, NULL, "vccs_plugin"); /* handle type name differs between headers; a pointer-sized buffer works for any */
     if (tr != 0) {
         char m[64];
         snprintf(m, sizeof m, "worker thread failed: 0x%X", (unsigned)tr);
