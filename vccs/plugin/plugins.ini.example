@@ -1,0 +1,12 @@
+; VCCS background plugin: copy vccs_plugin.prx to /data/GoldHEN/plugins/ and add this to
+; /data/GoldHEN/plugins.ini
+
+[default]
+/data/GoldHEN/plugins/vccs_plugin.prx
+
+; UNTESTED: if the colour holds in games but NOT on the home screen, try also
+; loading it into the system UI by un-commenting the next two lines.
+; NPXS20001 is the home-screen (system UI) title id as far as I know; whether
+; GoldHEN applies plugin sections to that process was not something I could verify.
+;[NPXS20001]
+;/data/GoldHEN/plugins/vccs_plugin.prx
