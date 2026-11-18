@@ -1,0 +1,23 @@
+[1000000 ms CUSA00001 eboot.bin pid=77] standby:no-config users=0 handles=0 applied=0 err=0x0
+[1000000 ms CUSA00001 eboot.bin pid=77] active users=2 handles=2 applied=2 err=0x0
+[1000500 ms CUSA00001 eboot.bin pid=77] standby:app-foreground users=0 handles=0 applied=0 err=0x0
+[1004500 ms CUSA00001 eboot.bin pid=77] active users=2 handles=2 applied=2 err=0x0
+[1004500 ms CUSA00001 eboot.bin pid=77] standby:keep-off users=0 handles=0 applied=0 err=0x0
+[1004500 ms CUSA00001 eboot.bin pid=77] active users=2 handles=2 applied=2 err=0x0
+[1004500 ms CUSA00001 eboot.bin pid=77] standby:system-default users=0 handles=0 applied=0 err=0x0
+[1004500 ms CUSA00001 eboot.bin pid=77] active users=2 handles=2 applied=2 err=0x0
+[1004500 ms CUSA00001 eboot.bin pid=77] active users=2 handles=1 applied=1 err=0x0
+[1004500 ms CUSA00001 eboot.bin pid=77] active users=2 handles=0 applied=0 err=0x0
+[1004500 ms CUSA00001 eboot.bin pid=77] active users=2 handles=2 applied=0 err=0xFFFFFFFF
+[1004500 ms CUSA00001 eboot.bin pid=77] hook scePadSetLightBar installed
+[1004500 ms CUSA00001 eboot.bin pid=77] hook scePadResetLightBar installed
+[1004500 ms CUSA00001 eboot.bin pid=77] active users=2 handles=2 applied=2 err=0x0
+[1004500 ms CUSA00001 eboot.bin pid=77] standby:keep-off users=0 handles=0 applied=0 err=0x0
+[1004500 ms CUSA00001 eboot.bin pid=77] active users=2 handles=2 applied=2 err=0x0
+[1004750 ms CUSA00001 eboot.bin pid=77] standby:app-foreground users=0 handles=0 applied=0 err=0x0
+[1004750 ms CUSA00001 eboot.bin pid=77] hook scePadSetLightBar failed
+[1004750 ms CUSA00001 eboot.bin pid=77] hook scePadResetLightBar failed
+[1004750 ms CUSA00001 eboot.bin pid=77] active users=2 handles=2 applied=2 err=0x0
+[1004750 ms CUSA00001 eboot.bin pid=77] hook scePadSetLightBar skipped: unsafe prologue
+[1004750 ms CUSA00001 eboot.bin pid=77] hook scePadResetLightBar skipped: unsafe prologue
+[1004750 ms CUSA00001 eboot.bin pid=77] hooks disabled by no_hooks file (polling only)

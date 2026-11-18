@@ -75,9 +75,9 @@ $(PKG): $(OUT)/eboot.bin $(STAGE)/sce_sys/param.sfo sce_sys/icon0.png
 	cp $(OUT)/eboot.bin $(STAGE)/eboot.bin
 	cp sce_sys/icon0.png $(STAGE)/sce_sys/icon0.png
 	cp "$(RIGHT_SPRX)" $(STAGE)/sce_sys/about/right.sprx
-	cd $(STAGE) && $(BIN)/create-gp4 -out ../pkg.gp4 --content-id=$(CONTENT_ID) \
+	cd $(STAGE) && $(BIN)/create-gp4 -out pkg.gp4 --content-id=$(CONTENT_ID) \
 	    --files "eboot.bin sce_sys/about/right.sprx sce_sys/param.sfo sce_sys/icon0.png"
-	cd $(OUT) && $(BIN)/PkgTool.Core pkg_build pkg.gp4 ../pkg
+	cd $(STAGE) && $(BIN)/PkgTool.Core pkg_build pkg.gp4 ../../pkg
 
 # ---- background plugin: mirrors the build rules of the GoldHEN Plugin SDK's own Makefile ----
 SDK_DIR     := third_party/GoldHEN_Plugins_SDK
