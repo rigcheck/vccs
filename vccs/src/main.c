@@ -37,6 +37,9 @@
 static uint32_t *g_fb; /* current back buffer, 0xAARRGGBB */
 
 #ifndef HOST_TEST
+/* numeric values of the PS4 video-out API (names differ between SDK headers) */
+#define VCCS_VIDEO_BUS_MAIN 0            /* bus type: main */
+#define VCCS_VIDEO_PIXEL_BGRA8_SRGB 0x80000000u /* A8R8G8B8 sRGB: 0xAARRGGBB in memory */
 static int g_video = -1;
 static void *g_buf[2];
 static int g_cur = 0;
@@ -44,7 +47,7 @@ static OrbisVideoOutBufferAttribute g_attr;
 
 static int plat_video_init(void)
 {
-    g_video = sceVideoOutOpen(ORBIS_USER_SERVICE_USER_ID_SYSTEM, ORBIS_VIDEO_OUT_BUS_TYPE_MAIN, 0, NULL);
+    g_video = sceVideoOutOpen(ORBIS_USER_SERVICE_USER_ID_SYSTEM, VCCS_VIDEO_BUS_MAIN, 0, NULL);
     if (g_video < 0) return g_video;
 
     size_t one = ((size_t)W * H * 4 + 0x1FFFFF) & ~(size_t)0x1FFFFF;
@@ -59,7 +62,7 @@ static int plat_video_init(void)
     g_buf[0] = addr;
     g_buf[1] = (uint8_t *)addr + one;
 
-    sceVideoOutSetBufferAttribute(&g_attr, ORBIS_VIDEO_OUT_PIXEL_FORMAT_A8R8G8B8_SRGB,
+    sceVideoOutSetBufferAttribute(&g_attr, VCCS_VIDEO_PIXEL_BGRA8_SRGB,
                                   ORBIS_VIDEO_OUT_TILING_MODE_LINEAR, ORBIS_VIDEO_OUT_ASPECT_RATIO_16_9, W, H, W);
     r = sceVideoOutRegisterBuffers(g_video, 0, g_buf, 2, &g_attr);
     if (r < 0) return r;
@@ -70,7 +73,7 @@ static int plat_video_init(void)
 
 static void plat_present(void)
 {
-    sceVideoOutSubmitFlip(g_video, g_cur, ORBIS_VIDEO_OUT_FLIP_MODE_VSYNC, 0);
+    sceVideoOutSubmitFlip(g_video, g_cur, ORBIS_VIDEO_OUT_FLIP_VSYNC, 0);
     while (sceVideoOutIsFlipPending(g_video) > 0) sceKernelUsleep(1000);
     g_cur ^= 1;
     g_fb = (uint32_t *)g_buf[g_cur];

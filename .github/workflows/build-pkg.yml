@@ -141,6 +141,16 @@ jobs:
         working-directory: ${{ env.PROJECT_DIR }}
         run: make plugin
 
+      - name: Show toolchain headers on failure (for debugging)
+        if: failure()
+        run: |
+          inc="$OO_PS4_TOOLCHAIN/include/orbis"
+          echo "=== video constants"; grep -rhn "ORBIS_VIDEO_OUT_" "$inc/_types/video.h" | head -80
+          echo "=== VideoOut.h prototypes"; grep -hn "sceVideoOut" "$inc/VideoOut.h" | head -60
+          echo "=== Pad.h"; grep -hn "scePad\|OrbisPadColor\|ORBIS_PAD_BUTTON" "$inc/Pad.h" "$inc/_types/pad.h" 2>/dev/null | head -80
+          echo "=== UserService"; grep -hn "LoginUserIdList\|GetInitialUser\|UserId" "$inc/UserService.h" "$inc/_types/user.h" 2>/dev/null | head -30
+          echo "=== libkernel"; grep -rhn "sceKernelMkdir\|sceKernelAllocateDirectMemory\|sceKernelMapDirectMemory\|sceKernelUsleep\|sceKernelGetProcessTime\|scePthreadCreate" "$inc" | head -20
+
       - name: Collect output
         working-directory: ${{ env.PROJECT_DIR }}
         run: |

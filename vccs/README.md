@@ -23,7 +23,7 @@ GoldHEN Plugin SDK's own Makefile (the SDK is vendored in `third_party/`, MIT li
 
 ## Build the .pkg with GitHub (easiest)
 
-1. Create a GitHub repo and push this folder (the `.github/workflows/build-pkg.yml` file is included).
+1. Create a GitHub repo and push this folder. `.github` is a hidden folder and web uploads often skip it: if it is missing in your repo, create `.github/workflows/build-pkg.yml` on github.com and paste in `workflow-copy/build-pkg.yml` (see `workflow-copy/README.txt`).
 2. Open the repo's **Actions** tab. The **Build VCCS PKG** workflow runs on every push.
    You can also start it by hand: Actions -> Build VCCS PKG -> Run workflow.
 3. When it finishes, open the run and download the artifact **vccs-pkg-and-plugin**. It
