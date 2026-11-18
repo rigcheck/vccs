@@ -74,6 +74,16 @@ jobs:
       - name: Install clang, lld, unzip
         run: sudo apt-get update && sudo apt-get install -y clang lld unzip
 
+      - name: Install libssl1.1 (PkgTool.Core needs it)
+        run: |
+          set -euo pipefail
+          if ! ldconfig -p | grep -q 'libssl.so.1.1'; then
+            echo "deb http://security.ubuntu.com/ubuntu focal-security main" | sudo tee /etc/apt/sources.list.d/focal-security.list
+            sudo apt-get update
+            sudo apt-get install -y libssl1.1
+          fi
+          ldconfig -p | grep -E 'libssl|libcrypto' || true
+
       - uses: actions/setup-dotnet@v4
         with:
           dotnet-version: "8.0.x"
@@ -144,6 +154,10 @@ jobs:
       - name: Show toolchain headers on failure (for debugging)
         if: failure()
         run: |
+          echo "=== PkgTool / dotnet / openssl"
+          file "$OO_PS4_TOOLCHAIN/bin/linux/PkgTool.Core" || true
+          dotnet --list-runtimes || true
+          ldconfig -p | grep -E 'libssl|libcrypto' || true
           inc="$OO_PS4_TOOLCHAIN/include/orbis"
           echo "=== video constants"; grep -rhn "ORBIS_VIDEO_OUT_" "$inc/_types/video.h" | head -80
           echo "=== VideoOut.h prototypes"; grep -hn "sceVideoOut" "$inc/VideoOut.h" | head -60
