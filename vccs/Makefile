@@ -58,7 +58,7 @@ $(OUT)/eboot.bin: $(OUT)/lightbar.elf
 $(STAGE)/sce_sys/param.sfo:
 	@mkdir -p $(STAGE)/sce_sys
 	$(BIN)/PkgTool.Core sfo_new $@
-	$(BIN)/PkgTool.Core sfo_setentry $@ APP_TYPE --type Integer --maxsize 4 --value 0
+	$(BIN)/PkgTool.Core sfo_setentry $@ APP_TYPE --type Integer --maxsize 4 --value 1
 	$(BIN)/PkgTool.Core sfo_setentry $@ APP_VER --type Utf8 --maxsize 8 --value '$(VERSION)'
 	$(BIN)/PkgTool.Core sfo_setentry $@ ATTRIBUTE --type Integer --maxsize 4 --value 0
 	$(BIN)/PkgTool.Core sfo_setentry $@ CATEGORY --type Utf8 --maxsize 4 --value 'gd'
@@ -75,8 +75,10 @@ $(PKG): $(OUT)/eboot.bin $(STAGE)/sce_sys/param.sfo sce_sys/icon0.png
 	cp $(OUT)/eboot.bin $(STAGE)/eboot.bin
 	cp sce_sys/icon0.png $(STAGE)/sce_sys/icon0.png
 	cp "$(RIGHT_SPRX)" $(STAGE)/sce_sys/about/right.sprx
+	@mkdir -p $(STAGE)/sce_module
+	@for m in libc.prx libSceFios2.prx; do f="$$(find "$(TOOLCHAIN)" -name $$m -print -quit 2>/dev/null)"; if [ -n "$$f" ]; then cp "$$f" $(STAGE)/sce_module/$$m; echo "packaged $$m from $$f"; else echo "WARNING: $$m not found in the toolchain - the app may not start"; fi; done
 	cd $(STAGE) && $(BIN)/create-gp4 -out pkg.gp4 --content-id=$(CONTENT_ID) \
-	    --files "eboot.bin sce_sys/about/right.sprx sce_sys/param.sfo sce_sys/icon0.png"
+	    --files "eboot.bin sce_sys/about/right.sprx sce_sys/param.sfo sce_sys/icon0.png $$(ls sce_module/* 2>/dev/null | tr '\n' ' ')"
 	cd $(STAGE) && $(BIN)/PkgTool.Core pkg_build pkg.gp4 ../../pkg
 
 # ---- background plugin: mirrors the build rules of the GoldHEN Plugin SDK's own Makefile ----
