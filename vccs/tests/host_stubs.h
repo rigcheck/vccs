@@ -30,6 +30,7 @@ static int host_set_fail = 0; /* when nonzero scePadSetLightBar returns this */
 
 static void host_system_override(int h) { host_light[h][0] = 0; host_light[h][1] = 0; host_light[h][2] = 64; }
 
+static int sceKernelMkdir(const char *p, int m) { (void)p; (void)m; return 0; }
 static int scePadInit(void) { return 0; }
 __attribute__((unused)) static int host_open_calls = 0;
 __attribute__((unused)) static bool host_pad_open[8] = {0, 1, 1, 0, 0, 0, 0, 0};

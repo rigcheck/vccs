@@ -105,6 +105,20 @@ One line per change of situation, tagged with the title id and process name, e.g
 (for example the home screen), this file shows whether the plugin loaded there at all and what
 error code the light bar call returned. Send me the file and I can adjust the plugin.
 
+### If there is no plugin.log at all
+
+No log means the plugin never started in any process, so GoldHEN did not load it. Check, in order:
+
+1. After the next build, the plugin also writes `/data/vccs_plugin_loaded.txt` the moment it loads. If that file
+   does not exist either, it did not load.
+2. The file is at exactly `/data/GoldHEN/plugins/vccs_plugin.prx` and `/data/GoldHEN/plugins.ini` contains
+   `[default]` followed by that path on its own line (no `;` in front, no extra spaces).
+3. Start the app **after** GoldHEN is loaded (re-run the jailbreak and load GoldHEN first), then open VCCS from
+   the home screen. Plugins are loaded when a game or app starts, not into programs that were already running.
+4. Make sure the `.prx` you copied is from the latest build artifact (`vccs-pkg-and-plugin`).
+5. Test GoldHEN plugin loading itself with a plugin you know works; if that does not load either, the cause is
+   the GoldHEN setup and not VCCS.
+
 ### Limits you should expect
 
 - **Not tested on a PS4.** Nothing here has been compiled against the real OpenOrbis headers or run

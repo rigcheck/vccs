@@ -62,6 +62,9 @@ static uint64_t plat_ms(void) { return sceKernelGetProcessTime() / 1000; }
 #define ALIVE_FILE CFG_DIR "/alive"
 #define LOG_FILE CFG_DIR "/plugin.log"
 #define NO_HOOKS_FILE CFG_DIR "/no_hooks"
+#ifndef MARKER_FILE
+#define MARKER_FILE "/data/vccs_plugin_loaded.txt"
+#endif
 #define ALIVE_WINDOW_MS 3000
 #define TICK_US 250000
 #define MAXU 4
@@ -90,6 +93,7 @@ static void make_tag(void)
 static void plog(const char *msg)
 {
     make_tag();
+    sceKernelMkdir(CFG_DIR, 0777); /* harmless if it exists; makes sure the log can be written */
     FILE *f = fopen(LOG_FILE, "a");
     if (!f) return;
     fseek(f, 0, SEEK_END);
@@ -343,6 +347,11 @@ int module_start(size_t argc, const void *args)
 {
     (void)argc; (void)args;
     plog("module_start (plugin loaded in this process)");
+    {   /* second, easy-to-find proof of loading: /data/vccs_plugin_loaded.txt (last process that loaded it) */
+        make_tag();
+        FILE *mf = fopen(MARKER_FILE, "w");
+        if (mf) { fprintf(mf, "VCCS plugin was loaded by: %s\n", g_tag); fclose(mf); }
+    }
     install_hooks();
     int tr = scePthreadCreate((void *)g_thread_handle, NULL, vccs_worker, NULL, "vccs_plugin"); /* handle type name differs between headers; a pointer-sized buffer works for any */
     if (tr != 0) {
