@@ -105,6 +105,14 @@ One line per change of situation, tagged with the title id and process name, e.g
 (for example the home screen), this file shows whether the plugin loaded there at all and what
 error code the light bar call returned. Send me the file and I can adjust the plugin.
 
+### If the app crashes with the plugin installed
+
+Hooks are now **off by default** (the plugin only polls 4 times a second, which is enough to hold the colour).
+The plugin also protects itself: before the risky steps it creates `/data/vccs/guard_hooks` and
+`/data/vccs/guard_thread`; if the console crashed in between, the leftover file makes the next start skip that
+step, and `plugin.log` says so. Create an empty file `/data/vccs/hooks_on` only if you want to try the hooks.
+Remove the plugin from `plugins.ini` to go back to the app alone.
+
 ### If there is no plugin.log at all
 
 No log means the plugin never started in any process, so GoldHEN did not load it. Check, in order:

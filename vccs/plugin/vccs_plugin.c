@@ -62,6 +62,9 @@ static uint64_t plat_ms(void) { return sceKernelGetProcessTime() / 1000; }
 #define ALIVE_FILE CFG_DIR "/alive"
 #define LOG_FILE CFG_DIR "/plugin.log"
 #define NO_HOOKS_FILE CFG_DIR "/no_hooks"
+#define HOOKS_ON_FILE CFG_DIR "/hooks_on"       /* hooks are opt-in: create this file to enable them */
+#define GUARD_HOOKS_FILE CFG_DIR "/guard_hooks" /* exists only while hooks are being installed; left over = that crashed */
+#define GUARD_THREAD_FILE CFG_DIR "/guard_thread" /* exists until the worker finished its first tick */
 #ifndef MARKER_FILE
 #define MARKER_FILE "/data/vccs_plugin_loaded.txt"
 #endif
@@ -331,10 +334,26 @@ static void vccs_test_reset(void)
     st_store(0);
 }
 #else
+static bool file_exists(const char *path)
+{
+    FILE *f = fopen(path, "r");
+    if (!f) return false;
+    fclose(f);
+    return true;
+}
+
+static void touch_file(const char *path)
+{
+    FILE *f = fopen(path, "w");
+    if (f) { fputs("1\n", f); fclose(f); }
+}
+
 static void *vccs_worker(void *arg)
 {
     (void)arg;
+    bool first = true;
     for (;;) {
+        if (first) { vccs_plugin_tick(); remove(GUARD_THREAD_FILE); first = false; }
         vccs_plugin_tick();
         sceKernelUsleep(TICK_US);
     }
@@ -352,10 +371,25 @@ int module_start(size_t argc, const void *args)
         FILE *mf = fopen(MARKER_FILE, "w");
         if (mf) { fprintf(mf, "VCCS plugin was loaded by: %s\n", g_tag); fclose(mf); }
     }
-    install_hooks();
+    /* Self-protection: a step that crashed last time leaves its guard file behind, and is skipped now. */
+    if (file_exists(GUARD_HOOKS_FILE)) {
+        plog("previous hook install crashed (guard_hooks left over): hooks stay off. Delete /data/vccs/guard_hooks to retry");
+    } else if (!file_exists(HOOKS_ON_FILE)) {
+        plog("hooks off (default): polling only. Create /data/vccs/hooks_on to enable hooks");
+    } else {
+        touch_file(GUARD_HOOKS_FILE);
+        install_hooks();
+        remove(GUARD_HOOKS_FILE);
+    }
+    if (file_exists(GUARD_THREAD_FILE)) {
+        plog("previous worker start crashed (guard_thread left over): no worker. Delete /data/vccs/guard_thread to retry");
+        return 0;
+    }
+    touch_file(GUARD_THREAD_FILE);
     int tr = scePthreadCreate((void *)g_thread_handle, NULL, vccs_worker, NULL, "vccs_plugin"); /* handle type name differs between headers; a pointer-sized buffer works for any */
     if (tr != 0) {
         char m[64];
+        remove(GUARD_THREAD_FILE);
         snprintf(m, sizeof m, "worker thread failed: 0x%X", (unsigned)tr);
         plog(m);
     }
